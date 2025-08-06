@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -19,6 +21,48 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     var screenHeight = MediaQuery.of(context).size.height;
     var screenWith = MediaQuery.of(context).size.width;
+
+    Future<List<Widget>> createList() async {
+      List<Widget> list = [];
+      String dataString = await DefaultAssetBundle.of(
+        context,
+      ).loadString("assets/data.json");
+      List<dynamic> dataJSON = json.decode(dataString);
+      dataJSON.forEach((element) {
+        list.add(
+          Padding(
+            padding: EdgeInsets.all(2.0),
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black12,
+                    spreadRadius: 2.0,
+                    blurRadius: 5.0,
+                  ),
+                ],
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(10.0),
+                    child: Image.asset(
+                      element["placeImage"],
+                      width: 80,
+                      height: 80,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      });
+    }
+
     return Scaffold(
       body: Container(
         height: screenHeight,
@@ -60,16 +104,68 @@ class BannerWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var screenWith = MediaQuery.of(context).size.width;
-    PageController controller = PageController(initialPage: 1);
+    PageController controller = PageController(
+      viewportFraction: 0.8,
+      initialPage: 1,
+    );
     List<Widget> banners = []; // Recommended creating list
 
     for (int i = 0; i < bannerItems.length; i++) {
-      var bannerView = Container(
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            Image.asset(bannerImages[i], fit: BoxFit.cover), //ssquare
-          ],
+      var bannerView = Padding(
+        padding: EdgeInsets.all(10.0),
+        child: Container(
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.all(Radius.circular(20.0)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black87,
+                      offset: Offset(2.0, 2.0),
+                      blurRadius: 5.0,
+                      spreadRadius: 1.0,
+                    ),
+                  ],
+                ),
+              ),
+              ClipRRect(
+                borderRadius: BorderRadius.all(Radius.circular(20.0)),
+                child: Image.asset(
+                  bannerImages[i],
+                  fit: BoxFit.cover,
+                ), //ssquare,
+              ),
+              Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.all(Radius.circular(20.0)),
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [Colors.transparent, Colors.black],
+                  ),
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.all(10.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      bannerItems[i],
+                      style: TextStyle(fontSize: 24.0, color: Colors.white),
+                    ),
+                    Text(
+                      "More than 40% off",
+                      style: TextStyle(fontSize: 12.0, color: Colors.white),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       );
       banners.add(bannerView);
