@@ -28,12 +28,19 @@ class _MyHomePageState extends State<MyHomePage> {
         context,
       ).loadString("assets/data.json");
       List<dynamic> dataJSON = json.decode(dataString);
+
       dataJSON.forEach((element) {
+        String finalString = "";
+        List<String> dataList = List<String>.from(element["placeItems"]);
+        dataList.forEach((item) {
+          finalString += item + "|";
+        });
         list.add(
           Padding(
             padding: EdgeInsets.all(2.0),
             child: Container(
               decoration: BoxDecoration(
+                color: Colors.white,
                 borderRadius: BorderRadius.all(Radius.circular(10.0)),
                 boxShadow: [
                   BoxShadow(
@@ -43,16 +50,66 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                 ],
               ),
+              margin: EdgeInsets.all(5.0),
+
               child: Row(
                 mainAxisSize: MainAxisSize.max,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   ClipRRect(
-                    borderRadius: BorderRadius.circular(10.0),
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(10.0),
+                      bottomLeft: Radius.circular(10.0),
+                    ),
                     child: Image.asset(
                       element["placeImage"],
                       width: 80,
                       height: 80,
                       fit: BoxFit.cover,
+                    ),
+                  ),
+                  SizedBox(
+                    width: 250,
+                    child: Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: Column(
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.only(top: 2.0),
+                            child: Text(
+                              element["placeName"],
+                              style: TextStyle(
+                                fontSize: 15.0,
+                                color: Colors.black54,
+                              ),
+                              maxLines: 1,
+                            ),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.only(top: 2.00),
+                            child: Text(
+                              finalString,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: 15.0,
+                                color: Colors.black54,
+                              ),
+                              maxLines: 1,
+                            ),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.only(top: 2.0),
+                            child: Text(
+                              finalString,
+                              style: TextStyle(
+                                fontSize: 15.0,
+                                color: Colors.black54,
+                              ),
+                              maxLines: 1,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ],
@@ -61,6 +118,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         );
       });
+      return list;
     }
 
     return Scaffold(
@@ -91,10 +149,35 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                 ),
                 BannerWidget(),
+                Container(
+                  child: FutureBuilder(
+                    initialData: <Widget>[Text('loading')],
+                    future: createList(),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        return Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: ListView(
+                            primary: false,
+                            shrinkWrap: true,
+                            children: snapshot.data!,
+                          ),
+                        );
+                      } else {
+                        return CircularProgressIndicator();
+                      }
+                    },
+                  ),
+                ),
               ],
             ),
           ),
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {},
+        backgroundColor: Colors.black54,
+        child: Icon(Icons.hotel, color: Colors.white),
       ),
     );
   }
